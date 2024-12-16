@@ -1,0 +1,64 @@
+-- Create database
+CREATE DATABASE edunet_platform;
+USE edunet_platform;
+
+-- Users table
+CREATE TABLE users (
+    user_id VARCHAR(20) PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    user_type ENUM('student', 'admin') DEFAULT 'student',
+    department VARCHAR(50),
+    year_of_study VARCHAR(20),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Posts table
+CREATE TABLE posts (
+    post_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(20),
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Comments table
+CREATE TABLE comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT,
+    user_id VARCHAR(20),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts(post_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Replies table
+CREATE TABLE replies (
+    reply_id INT AUTO_INCREMENT PRIMARY KEY,
+    comment_id INT,
+    user_id VARCHAR(20),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (comment_id) REFERENCES comments(comment_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Materials table
+CREATE TABLE materials (
+    material_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    course_type VARCHAR(50) NOT NULL,
+    year_sem VARCHAR(50) NOT NULL,
+    uploaded_by VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (uploaded_by) REFERENCES users(user_id)
+);
+
+-- Insert default admin user
+INSERT INTO users (user_id, username, password, full_name, user_type) 
+VALUES ('ADMIN-001', 'admin', '$2y$10$yoursalthereadmin123hash', 'System Administrator', 'admin');
